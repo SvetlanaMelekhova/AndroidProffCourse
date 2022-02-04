@@ -2,6 +2,7 @@ package com.svetlana.learn.androidproffcourse.presentation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import com.svetlana.learn.androidproffcourse.R
 
@@ -17,7 +18,5 @@ class MainActivity : AppCompatActivity() {
         viewModel.shopList.observe(this){
 
         }
-
-        viewModel.getShopList()
     }
 }
