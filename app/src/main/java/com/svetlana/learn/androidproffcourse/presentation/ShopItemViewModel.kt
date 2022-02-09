@@ -63,7 +63,6 @@ class ShopItemViewModel : ViewModel() {
                 editShopItemUseCase.editShopItem(shopItem)
                 finishWork()
             }
-
         }
     }
 
