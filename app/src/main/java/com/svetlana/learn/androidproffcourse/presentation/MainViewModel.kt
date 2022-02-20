@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.svetlana.learn.androidproffcourse.data.ShopListRepositoryImpl
 import com.svetlana.learn.androidproffcourse.domain.*
 import kotlinx.coroutines.*
@@ -18,25 +19,18 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
     private val editShopItemUseCase = EditShopItemUseCase(repository)
     private val getShopItemUseCase = GetShopItemUseCase(repository)
 
-    private val scope = CoroutineScope(Dispatchers.IO + Job())
-
     val shopList = getShopListUseCase.getShopList()
 
     fun deleteShopItem(shopItem: ShopItem){
-        scope.launch {
+        viewModelScope.launch {
             deleteShopItemUseCase.deleteShopItem(shopItem)
         }
     }
 
     fun changeEnableState(shopItem: ShopItem){
-        scope.launch {
+        viewModelScope.launch {
             val newItem = shopItem.copy(enabled = !shopItem.enabled)
             editShopItemUseCase.editShopItem(newItem)
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        scope.cancel()
     }
 }
