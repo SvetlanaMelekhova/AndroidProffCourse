@@ -2,21 +2,15 @@ package com.svetlana.learn.androidproffcourse.presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.recyclerview.widget.ListAdapter
 import com.svetlana.learn.androidproffcourse.R
+import com.svetlana.learn.androidproffcourse.databinding.ItemShopDisabledBinding
+import com.svetlana.learn.androidproffcourse.databinding.ItemShopEnabledBinding
 import com.svetlana.learn.androidproffcourse.domain.ShopItem
 
 class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCallback()){
-    //: RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
-
-    //var count = 0
-    /*var shopList = listOf<ShopItem>()
-        set(value) {
-            val callback = ShopListDiffCallback(shopList, value)
-            val diffResult = DiffUtil.calculateDiff(callback)
-            diffResult.dispatchUpdatesTo(this)
-            field = value
-        }*/
 
     var onShopItemLongClickListener: ((ShopItem) -> Unit)? = null
     var onShopItemClickListener: ((ShopItem) -> Unit)? = null
@@ -27,44 +21,40 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
             VIEW_TYPE_ENABLED -> R.layout.item_shop_enabled
             else -> throw RuntimeException("Unknown view type: $viewType")
         }
-        val view = LayoutInflater.from(parent.context).inflate(layout, parent, false)
-        return ShopItemViewHolder(view)
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            LayoutInflater.from(parent.context),
+            layout,
+            parent,
+            false
+        )
+        return ShopItemViewHolder(binding)
     }
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
         val shopItem = getItem(position)
-        //val shopItem = shopList[position]
-        viewHolder.view.setOnLongClickListener {
+        val binding = viewHolder.binding
+        binding.root.setOnLongClickListener {
             onShopItemLongClickListener?.invoke(shopItem)
             true
         }
 
-        viewHolder.view.setOnClickListener {
+        binding.root.setOnClickListener {
             onShopItemClickListener?.invoke(shopItem)
         }
-        viewHolder.tvName.text = shopItem.name
-        viewHolder.tvCount.text = shopItem.count.toString()
-    }
+        when (binding) {
 
-    /*override fun onViewRecycled(viewHolder: ShopItemViewHolder) {
-        super.onViewRecycled(viewHolder)
-        viewHolder.tvName.text = ""
-        viewHolder.tvCount.text = ""
-        viewHolder.tvName.setTextColor(
-            ContextCompat.getColor(
-                viewHolder.view.context,
-                android.R.color.white
-            )
-        )
-    }*/
-/*
-    override fun getItemCount(): Int {
-        return shopList.size
-    }*/
+            is ItemShopDisabledBinding -> {
+                binding.shopItem = shopItem
+            }
+
+            is ItemShopEnabledBinding -> {
+                binding.shopItem = shopItem
+            }
+        }
+    }
 
     override fun getItemViewType(position: Int): Int {
         val item = getItem(position)
-        //val item = shopList[position]
         return if (item.enabled) {
             VIEW_TYPE_ENABLED
         } else {
@@ -72,15 +62,9 @@ class ShopListAdapter : ListAdapter<ShopItem, ShopItemViewHolder>(ShopItemDiffCa
         }
     }
 
-    /*interface OnShopItemLongClickListener {
-        fun onShopItemLongClick(shopItem: ShopItem)
-    }*/
-
     companion object {
-
         const val VIEW_TYPE_ENABLED = 100
         const val VIEW_TYPE_DISABLED = 101
-
         const val MAX_POOL_SIZE = 30
     }
 }
