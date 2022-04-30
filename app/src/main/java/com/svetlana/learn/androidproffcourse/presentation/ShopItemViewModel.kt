@@ -1,22 +1,21 @@
 package com.svetlana.learn.androidproffcourse.presentation
 
-import android.app.Application
-import androidx.lifecycle.*
-import com.svetlana.learn.androidproffcourse.data.ShopListRepositoryImpl
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.svetlana.learn.androidproffcourse.domain.AddShopItemUseCase
 import com.svetlana.learn.androidproffcourse.domain.EditShopItemUseCase
 import com.svetlana.learn.androidproffcourse.domain.GetShopItemUseCase
 import com.svetlana.learn.androidproffcourse.domain.ShopItem
-import kotlinx.coroutines.*
-import java.lang.Exception
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ShopItemViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val repository = ShopListRepositoryImpl(application)
-
-    private val getShopItemUseCase = GetShopItemUseCase(repository)
-    private val addShopItemUseCase = AddShopItemUseCase(repository)
-    private val editShopItemUseCase = EditShopItemUseCase(repository)
+class ShopItemViewModel @Inject constructor(
+    private val getShopItemUseCase: GetShopItemUseCase,
+    private val addShopItemUseCase: AddShopItemUseCase,
+    private val editShopItemUseCase: EditShopItemUseCase,
+    ) : ViewModel() {
 
     private val _errorInputName = MutableLiveData<Boolean>()
     val errorInputName: LiveData<Boolean>
@@ -106,7 +105,7 @@ class ShopItemViewModel(application: Application) : AndroidViewModel(application
         _errorInputCount.value = false
     }
 
-    private fun finishWork(){
+    private fun finishWork() {
         _shouldCloseScreen.value = Unit
     }
 }
