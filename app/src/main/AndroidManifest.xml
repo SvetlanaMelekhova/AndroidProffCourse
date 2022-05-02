@@ -21,6 +21,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        
+        <provider
+            android:authorities="com.svetlana.learn.androidproffcourse"
+            android:name=".data.ShopListProvider"
+            android:exported="true"/>
     </application>
 
 </manifest>
