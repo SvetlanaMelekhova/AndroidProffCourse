@@ -7,10 +7,11 @@ import android.database.Cursor
 import android.net.Uri
 import android.util.Log
 import com.svetlana.learn.androidproffcourse.di.AppComponent
+import com.svetlana.learn.androidproffcourse.domain.ShopItem
 import com.svetlana.learn.androidproffcourse.presentation.ShopApp
 import javax.inject.Inject
 
-class ShopListProvider: ContentProvider() {
+class ShopListProvider : ContentProvider() {
 
     private val component by lazy {
         (context as ShopApp).component
@@ -18,6 +19,9 @@ class ShopListProvider: ContentProvider() {
 
     @Inject
     lateinit var shopListDao: ShopListDao
+
+    @Inject
+    lateinit var mapper: ShopListMapper
 
     private val uriMatcher = UriMatcher(UriMatcher.NO_MATCH).apply {
         addURI("com.svetlana.learn.androidproffcourse", "shop_items", GET_SHOP_ITEMS_QUERY)
@@ -41,9 +45,9 @@ class ShopListProvider: ContentProvider() {
     ): Cursor? {
         return when (uriMatcher.match(uri)) {
             GET_SHOP_ITEMS_QUERY -> {
-                 shopListDao.getShopListCursor()
+                shopListDao.getShopListCursor()
             }
-            else ->  null
+            else -> null
         }
     }
 
@@ -52,14 +56,41 @@ class ShopListProvider: ContentProvider() {
     }
 
     override fun insert(uri: Uri, values: ContentValues?): Uri? {
-        TODO("Not yet implemented")
+        when (uriMatcher.match(uri)) {
+            GET_SHOP_ITEMS_QUERY -> {
+                if (values == null) return null
+                val id = values.getAsInteger("id")
+                val name = values.getAsString("name")
+                val count = values.getAsInteger("count")
+                val enabled = values.getAsBoolean("enabled")
+                val shopItem = ShopItem(
+                    id = id,
+                    name = name,
+                    enabled = enabled,
+                    count = count
+                )
+                shopListDao.addShopItemViaProvider(mapper.mapEntityToDbModel(shopItem))
+            }
+        }
+        return null
     }
 
     override fun delete(uri: Uri, selection: String?, selectionArgs: Array<out String>?): Int {
-        TODO("Not yet implemented")
+        when (uriMatcher.match(uri)) {
+            GET_SHOP_ITEMS_QUERY -> {
+                val id = selectionArgs?.get(0)?.toInt() ?: -1
+                return shopListDao.deleteShopItemViaProvider(id)
+            }
+        }
+        return 0
     }
 
-    override fun update(uri: Uri, values: ContentValues?, selection: String?, selectionArgs: Array<out String>?): Int {
+    override fun update(
+        uri: Uri,
+        values: ContentValues?,
+        selection: String?,
+        selectionArgs: Array<out String>?
+    ): Int {
         TODO("Not yet implemented")
     }
 
