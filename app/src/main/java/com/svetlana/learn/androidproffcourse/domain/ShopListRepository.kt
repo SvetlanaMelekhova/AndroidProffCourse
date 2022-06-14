@@ -13,4 +13,7 @@ interface ShopListRepository {
     suspend fun getShopItem(shopItemId: Int): ShopItem
 
     fun getShopList(): LiveData<List<ShopItem>>
+    fun getShopList1(): LiveData<List<ShopItem>>
+    fun getShopList2(): LiveData<List<ShopItem>>
+    fun getShopList3(): LiveData<List<ShopItem>>
 }
